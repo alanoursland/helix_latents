@@ -2,3 +2,6 @@ __pycache__/
 src/checkpoints/
 src/checkpoints_test/
 src/results/
+src/mnist_checkpoints/
+src/mnist_results/
+src/data/
