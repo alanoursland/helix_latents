@@ -58,6 +58,8 @@ Training loss:        4.08 → 1.76 (decreasing)
 Validation loss:      4.09 → 8.09 (increasing)
 ```
 
+![Baseline training history](figures/baseline_training_history.png)
+
 ### Caveat on the baseline
 
 Modular addition is a known grokking task. With standard cross-entropy training and a 70/15/15 split, the memorization regime can persist for thousands of epochs before validation accuracy snaps to ~100%. Replicating the published grokking phenomenon typically requires high weight decay (≈1.0), full-batch or large-batch training, and many more epochs than were used here.
@@ -94,6 +96,8 @@ The model receives circular representations for both `a` and `b` and predicts `c
 
 Both train and validation accuracy reached approximately 100%. The explicit circular representation was sufficient for the model to learn modular addition and generalize to held-out pairs.
 
+![Circle training history](figures/circle_training_history.png)
+
 ### Intervention behavior
 
 Rotation interventions were applied to the circular subspace of `latent(a)` for shifts `k ∈ {1, 2, 3, 5, 10, 17, 29}`. Two rotation modes were evaluated. They are equivalent for this model, since there is no axial coordinate.
@@ -105,6 +109,12 @@ Rotation interventions were applied to the circular subspace of `latent(a)` for 
 | Random control | 0.03% |
 
 The 0.03% on the random control corresponds to a single correct prediction out of 3,661 examples, which is *below* chance. This indicates that random rotations actively destroy the model's signal — the representation is tightly coupled to the structured subspace.
+
+![Circle phase-only intervention](figures/circle_intervention_phase_only.png)
+
+![Circle phase+axis intervention](figures/circle_intervention_phase_plus_axis.png)
+
+![Circle random intervention](figures/circle_intervention_random.png)
 
 ### Interpretation
 
@@ -135,6 +145,8 @@ Training loss:        4.08 → 0.018 (over 500 epochs)
 ```
 
 The helix representation was sufficient for the model to solve the task at near-perfect accuracy.
+
+![Helix training history](figures/helix_training_history.png)
 
 ### Intervention behavior
 
@@ -172,6 +184,14 @@ Phase+axis:
 | 10 | 97.90% |
 | 17 | 94.07% |
 | 29 | 87.95% |
+
+![Helix phase-only intervention](figures/helix_intervention_phase_only.png)
+
+![Helix phase+axis intervention](figures/helix_intervention_phase_plus_axis.png)
+
+![Helix axis-only intervention](figures/helix_intervention_axis_only.png)
+
+![Helix random intervention](figures/helix_intervention_random.png)
 
 ### Interpretation
 
