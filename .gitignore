@@ -1,0 +1,4 @@
+__pycache__/
+src/checkpoints/
+src/checkpoints_test/
+src/results/
