@@ -1,4 +1,5 @@
 __pycache__/
+.pytest_cache/
 src/checkpoints/
 src/checkpoints_test/
 src/results/
@@ -6,4 +7,7 @@ src/mnist_checkpoints/
 src/mnist_results/
 src/cifar10_checkpoints/
 src/cifar10_results/
+src/covertype_checkpoints/
+src/covertype_results/
+src/covertype_data/
 src/data/
