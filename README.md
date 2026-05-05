@@ -2,11 +2,15 @@
 
 An experimental investigation into whether neural network layers with built-in geometric structure — circular phase, radial magnitude, helical axis — learn to use that structure, or just treat it as another nonlinearity.
 
+## Motivation
+
+Mechanistic interpretability work has found that large language models represent numbers internally as generalized helices and manipulate these helices to perform arithmetic. Nanda et al. first showed circular structure in modular addition ([A Mechanistic Interpretation of Arithmetic Reasoning in Language Models](https://arxiv.org/abs/2502.00873)), demonstrating that LLMs solve `a + b` by operating on helical number representations — the "Clock algorithm." These helices are not designed in; they emerge from training on next-token prediction over text that happens to contain arithmetic.
+
+This raises a question: if helical geometry emerges naturally in large models trained on general data, can we build layers that provide the geometric primitives explicitly and get the same structure to emerge in small models trained on specific tasks? If the answer is yes, these layers would give us architectures with built-in interpretable geometric variables — phase, radius, axis — that we could read out and intervene on directly, without reverse-engineering them from unstructured representations.
+
 ## The Question
 
-Standard neural network layers map inputs through dense linear transformations and pointwise nonlinearities. The representations that emerge are unstructured — they work, but they are not organized around any particular geometric primitive.
-
-What happens if you give a layer the mathematical machinery for phase and radius (circle) or phase, radius, and axis position (helix)? Specifically:
+What happens if you give a layer the mathematical machinery for phase and radius (circle) or phase, radius, and axis position (helix)?
 
 1. Does the layer learn to use phase as phase, or does it ignore the structure and treat `sin(θ)`, `cos(θ)`, `r` as three more nonlinear features?
 2. If you give a convolutional layer two independent filter banks and the formula for converting their outputs into phase/radius, does gradient descent discover that pairing the filters as 90°-rotated copies would let the phase track input orientation?
@@ -84,21 +88,17 @@ This was the cleanest possible test of self-organization: the input symmetry exa
 
 ## Conclusion
 
-The geometric layers work. They train reliably, produce finite gradients, and achieve competitive or better accuracy across every task tested. They are not broken. On flattened CIFAR-10, they provide a genuine advantage that dense baselines cannot match at the same scale.
+The geometric layers train reliably and do not break anything. They reach accuracy roughly comparable to standard layers across all tasks tested, though after accounting for parameter count they are generally slightly less efficient than dense linear layers (Experiments 2, 4). The flattened CIFAR-10 result (Experiment 3) is the one case where geometric layers clearly outperform dense baselines on absolute accuracy, but we did not control tightly enough for parameter count to know whether that advantage is structural or just capacity.
 
-But there is no evidence that they learn geometric structure.
+The one experiment that directly tested whether the geometric features are used geometrically (Experiment 5) found that they are not. When given independent filter banks and the mathematical machinery to compute phase and radius, gradient descent on a rotation-augmented classification task does not learn to pair the filters as rotated copies. The phase variable does not track input orientation. The geometric features are treated as a generic nonlinear expansion of the convolutional outputs.
 
-When circular geometry is imposed on a task with known circular symmetry (Experiment 1), the representation is causally manipulable. When the same geometric primitives are offered as learnable features on tasks with clear rotational structure (Experiment 5), gradient descent ignores the structure and uses the features as a generic nonlinear expansion. The layer has the mathematical vocabulary for phase and orientation. It does not learn to speak it.
+For Experiments 2-4, we did not inspect whether the learned representations use phase as phase internally — we only compared final accuracy. It is possible that some geometric structure is present but was not measured. The only direct test is Experiment 5, and it was negative.
 
-The flattened CIFAR-10 result (Experiment 3) is real but ambiguous. The geometric layers outperform dense baselines by a meaningful margin, and the gap grows with scale. Whether this reflects genuine structural utility or simply a favorable parameter expansion is not resolved. The Covertype result (Experiment 4) leans toward the latter interpretation — the geometric models win on absolute metrics but lose on parameter efficiency.
+When geometry is imposed rather than learned (Experiment 1), it works cleanly — rotating phase by a known amount shifts the output predictably. This confirms the mathematical pipeline is sound. The gap is between "the structure works when you build it in" and "the structure emerges when you let gradient descent find it."
 
-Across five experiments, the pattern is:
+The project's original motivation was that helix-shaped representations emerge in LLMs trained on general text (Nanda et al.), and that providing the geometric primitives explicitly might encourage the same structure to emerge in smaller models trained on specific tasks. The evidence does not support this. The conditions under which helices emerge in LLMs — massive scale, diverse training data, incidental arithmetic in a language modeling objective — may be essential, not incidental. Providing the geometric vocabulary is not enough; gradient descent on a classification loss finds other solutions that work equally well without organizing the representation geometrically.
 
-- **Imposed geometry + matching task symmetry = clean, manipulable structure.**
-- **Learned geometry + matching task symmetry = generic nonlinearity.**
-- **Learned geometry + non-geometric task = sometimes better accuracy, but via parameter count, not structural discovery.**
-
-The project's original motivation was that helix-shaped latent representations might self-organize when the architecture provides the right primitives. The evidence does not support this. The geometric layers are a functional architectural choice — sometimes useful, never self-organizing.
+These layers are a viable but unremarkable architectural choice for the tasks tested here.
 
 ## Running the Code
 
