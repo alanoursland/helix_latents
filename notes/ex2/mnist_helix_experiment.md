@@ -640,8 +640,8 @@ classification utility
 phase representation
 ```
 
-## Goblin Summary
+## Summary
 
 First prove the helix layer can learn digits.
 
-Then make it fight harder beasts.
+Then move to harder benchmarks.

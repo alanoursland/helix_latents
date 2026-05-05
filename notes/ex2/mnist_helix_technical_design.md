@@ -1416,10 +1416,10 @@ ordinary tensors out
 helix-native computation inside
 ```
 
-Goblin version:
+In plain terms:
 
 ```text
-Let the layer sniff a 3D tunnel through the input,
-measure spin, distance, and depth,
-then hand the next layer a useful pile of shiny features.
+The layer projects input into a 3D subspace,
+measures phase, radius, and axis position,
+then passes a set of geometric features to the next layer.
 ```

@@ -10,4 +10,8 @@ src/cifar10_results/
 src/covertype_checkpoints/
 src/covertype_results/
 src/covertype_data/
+src/rot_mnist_checkpoints/
+src/rot_mnist_results/
+src/rot_mnist_data/
+src/rot_mnist_figures/
 src/data/

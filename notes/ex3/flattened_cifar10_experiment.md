@@ -758,14 +758,14 @@ UCI Spambase
 
 Tabular data has no image locality, no rotation, and no obvious phase variable. It is a strong test of whether HelixLayer is a genuinely general nonlinear feature primitive.
 
-## Goblin Summary
+## Summary
 
-Flatten the tiny pictures.
+Flatten the images into vectors.
 
-Take away the convolution crutch.
+Remove the convolution advantage.
 
-Make the dense goblin and spiral goblin fight on bad terrain.
+Compare dense and geometric MLPs on deliberately hard terrain.
 
-The number that matters is not whether either one becomes a vision champion.
+The number that matters is not whether either model becomes a vision champion.
 
-The number that matters is the gap.
+The number that matters is the gap between them.

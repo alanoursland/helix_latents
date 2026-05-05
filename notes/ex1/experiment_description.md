@@ -288,7 +288,7 @@ This is stronger than saying:
 
 The experiment tests whether the representation has causal semantics. Rotating the latent should produce a predictable transformation in model behavior.
 
-In goblin terms: twist the little hidden spiral, see whether the answer twists with it.
+In short: twist the learned helix in the hidden representation and check whether the output rotates with it.
 
 ## Minimal Implementation Plan
 

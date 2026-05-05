@@ -1620,14 +1620,14 @@ HelixLayer may struggle with high-dimensional nonlocal pixel data.
 
 This would motivate tabular classification as a different kind of generality test.
 
-## Goblin Summary
+## Summary
 
-First make sure the spiral beast can stand up.
+First make sure the geometric models train stably.
 
-Then make it memorize one tiny pile of CIFAR goblins.
+Then make them memorize a small CIFAR-10 batch.
 
-Then make it fight dense goblins at small, medium, and large sizes.
+Then compare against dense MLPs at small, medium, and large scales.
 
-Do not ask whether it conquered vision.
+Do not ask whether they conquered vision.
 
-Ask how far behind or ahead it is on the same bad terrain.
+Ask how far behind or ahead they are on the same bad terrain.

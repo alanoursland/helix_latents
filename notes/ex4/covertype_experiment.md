@@ -449,14 +449,14 @@ Experiment 4: Covertype
 
 Covertype is the first test where the input is not image-origin and not explicitly cyclic.
 
-## Goblin Summary
+## Summary
 
 No pixels.
 
 No rotations.
 
-No spiral-shaped steak.
+No synthetic cyclic structure.
 
-Just mixed little columns, some smooth, some binary, all annoying.
+Just mixed tabular columns, some continuous, some binary.
 
-If the circle or helix goblin still fights well here, the shiny gets shinier.
+If the geometric models still perform well here, the case for general utility gets stronger.

@@ -1280,14 +1280,14 @@ The MNIST experiment v1 is complete when:
 10. A cautious `mnist_results.md` writeup exists.
 11. The next experiment decision is documented.
 
-## Goblin Summary
+## Summary
 
 Build the layer.
 
 Make sure it does not explode.
 
-Make it memorize one tiny digit pile.
+Make it memorize a small batch.
 
 Make it learn all the digits.
 
-Only then ask whether the spiral beast is actually better than a plain old dense goblin.
+Only then ask whether the geometric layer is actually better than a plain dense MLP.

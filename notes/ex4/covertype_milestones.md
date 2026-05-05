@@ -1116,14 +1116,14 @@ The Covertype experiment v1 is complete when:
 10. Results document is written cautiously.
 11. Multi-seed follow-up is planned or completed.
 
-## Goblin Summary
+## Summary
 
-Build the tabular cave.
+Build the tabular data pipeline.
 
-Check the columns are clean.
+Check the preprocessing is clean.
 
-Make each goblin fit a tiny pile.
+Make each model overfit a small batch.
 
-Then make dense, circle, and helix fight across scales.
+Then compare dense, circle, and helix across scales.
 
-If the circle goblin wins again, respect the circle goblin.
+If the circle model wins again, that result is worth understanding.

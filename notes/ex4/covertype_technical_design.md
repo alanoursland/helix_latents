@@ -1145,10 +1145,10 @@ test loss
 mean epoch time
 ```
 
-Goblin version:
+In plain terms:
 
 ```text
-Give the models 54 mixed little columns.
-No pictures. No spirals. No mercy.
-See which goblin generalizes.
+Give the models 54 mixed tabular columns.
+No images. No cyclic structure. No easy wins.
+See which architecture generalizes.
 ```

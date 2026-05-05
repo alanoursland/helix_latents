@@ -82,6 +82,30 @@ python covertype_run_experiment.py --all-models --scale large
 python covertype_run_experiment.py --all-models --sweep-scales
 ```
 
+## Experiment 5: Rotated MNIST HelixConv
+
+Tests whether HelixConv self-organizes to track input orientation on rotation-augmented MNIST.
+
+```bash
+# Tests
+python rot_mnist_test_all.py
+python rot_mnist_test_all.py --data
+python rot_mnist_test_all.py --slow
+
+# Quick sanity check
+python rot_mnist_run_experiment.py --quick --all-models
+
+# Single scale with analysis
+python rot_mnist_run_experiment.py --all-models --scale small --run-filter-analysis --run-trajectory-analysis
+python rot_mnist_run_experiment.py --all-models --scale medium --run-filter-analysis --run-trajectory-analysis
+
+# Causal intervention (only if filter/trajectory analyses show self-organization)
+python rot_mnist_run_experiment.py --model-type helix_conv --scale small --run-intervention-analysis
+
+# All scales
+python rot_mnist_run_experiment.py --all-models --sweep-scales
+```
+
 ## Common Options
 
 Most experiment runners support:
@@ -90,7 +114,7 @@ Most experiment runners support:
 |---|---|
 | `--quick` | 1 epoch, limited batches (smoke test) |
 | `--all-models` | Run all 4 model variants |
-| `--model-type X` | Run a single model (standard_mlp, standard_mlp_matched, circle_mlp, helix_mlp) |
+| `--model-type X` | Run a single model (see experiment for variant names) |
 | `--scale X` | Set scale (small, medium, large) |
 | `--sweep-scales` | Run all scales |
 | `--seed N` | Set random seed |
@@ -122,4 +146,5 @@ numpy
 matplotlib
 tqdm
 scikit-learn
+scipy
 ```

@@ -1613,9 +1613,9 @@ The central number is:
 accuracy gap between Helix MLP and parameter-matched dense MLP
 ```
 
-Goblin version:
+In plain terms:
 
 ```text
-No spiral-shaped steak this time.
-Just ugly flattened pixels.
-Let the dense goblin and spiral goblin fight in the mud.
+No synthetic cyclic task this time.
+Just raw flattened pixels with no spatial structure.
+Compare dense and geometric MLPs on difficult ground.

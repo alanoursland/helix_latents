@@ -69,7 +69,7 @@ import helix_latents
 
 ### Notes
 
-Keep this milestone boring. No experiment logic yet. The little goblin cave needs shelves before it needs treasure.
+Keep this milestone boring. No experiment logic yet. The project needs scaffolding before it needs results.
 
 ## Milestone 1: Configuration and Utilities
 
