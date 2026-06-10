@@ -24,6 +24,8 @@ class RotMNISTConfig:
         "standard_cnn_matched",
         "circle_conv",
         "helix_conv",
+        "helix_conv_quadinit",
+        "helix_conv_quadreg",
     ] = "helix_conv"
 
     scale: Literal["small", "medium", "large"] = "small"
@@ -47,6 +49,12 @@ class RotMNISTConfig:
 
     rotation_max_degrees: int = 180
     rotation_fill: float = 0.0
+
+    # Quadrature regularization strength (helix_conv_quadreg only).
+    # The penalty is ~2 per conv block at random init and 0 at exact
+    # quadrature, so lambda=0.1 starts the penalty term at roughly 0.4
+    # against a cross-entropy of ~2.3.
+    quad_reg_lambda: float = 0.1
 
     seed: int = 0
     device: str = "cuda"

@@ -4,7 +4,7 @@ An experimental investigation into whether neural network layers with built-in g
 
 ## Motivation
 
-Mechanistic interpretability work has found that large language models represent numbers internally as generalized helices and manipulate these helices to perform arithmetic. Nanda et al. first showed circular structure in modular addition ([A Mechanistic Interpretation of Arithmetic Reasoning in Language Models](https://arxiv.org/abs/2502.00873)), demonstrating that LLMs solve `a + b` by operating on helical number representations — the "Clock algorithm." These helices are not designed in; they emerge from training on next-token prediction over text that happens to contain arithmetic.
+Mechanistic interpretability work has found that large language models represent numbers internally as generalized helices and manipulate these helices to perform arithmetic. Nanda et al. first showed circular number representations in toy transformers trained on modular addition ([Progress Measures for Grokking via Mechanistic Interpretability](https://arxiv.org/abs/2301.05217)). Kantamneni & Tegmark then showed that full-scale LLMs solve `a + b` by operating on helical number representations — the "Clock algorithm" ([Language Models Use Trigonometry to Do Addition](https://arxiv.org/abs/2502.00873)). These helices are not designed in; they emerge from training on next-token prediction over text that happens to contain arithmetic.
 
 This raises a question: if helical geometry emerges naturally in large models trained on general data, can we build layers that provide the geometric primitives explicitly and get the same structure to emerge in small models trained on specific tasks? If the answer is yes, these layers would give us architectures with built-in interpretable geometric variables — phase, radius, axis — that we could read out and intervene on directly, without reverse-engineering them from unstructured representations.
 
@@ -76,6 +76,16 @@ This was the cleanest possible test of self-organization: the input symmetry exa
 
 [Design](notes/ex5/rotated_mnist_helix_conv_experiment.md) | [Results](notes/ex5/rotated_mnist_helix_conv_results.md)
 
+### Experiment 6: Quadrature Initialization and Regularization
+
+**Question:** Is Experiment 5's negative result because the loss landscape has no quadrature basin, or because gradient descent never finds it?
+
+**Setup:** Same rotated MNIST protocol as Experiment 5, with two new variants: `helix_conv_quadinit` initializes `W_v = rotate(W_u, 90°)` exactly and trains unconstrained (does training preserve or destroy the structure?); `helix_conv_quadreg` adds a soft penalty pulling `W_v` toward `rotate(W_u, 90°)` (is quadrature compatible with the task loss?). Quadrature alignment is tracked every epoch.
+
+**Result:** "Never found", not "actively repelled" — at the input layer. Layer-0 quadrature imposed at init largely survives 30 unconstrained epochs (alignment 1.0 → 0.71, all 16 units still at φ* = 90°), and a mild regularizer (λ=0.1) holds alignment at ~1.0 with no accuracy cost. But all variants reach identical accuracy (~96%), and layer-1 quadrature collapses within 5 epochs. The quadrature manifold is a neutral plateau in pixel space: the loss neither needs the geometry nor resists it, so random init never wanders there.
+
+[Design](notes/ex6/quadrature_experiment.md) | [Results](notes/ex6/quadrature_results.md)
+
 ## Summary Table
 
 | # | Task | Geometry | Accuracy vs Dense | Self-Org? | Verdict |
@@ -85,10 +95,13 @@ This was the cleanest possible test of self-organization: the input symmetry exa
 | 3 | CIFAR-10 (flat) | Learned MLP | +5.6 pts | Not tested | Best positive result |
 | 4 | Covertype (tabular) | Learned MLP | +1.0 pts (4x params) | Not tested | Wins on absolute, loses on efficiency |
 | 5 | Rotated MNIST | Learned Conv | Comparable | **No** | No self-organization |
+| 6 | Rotated MNIST | Imposed-then-learned Conv | Comparable | N/A (imposed) | Quadrature is permitted, not preferred |
 
 ## Conclusion
 
 The geometric layers train reliably and do not break anything. They reach accuracy roughly comparable to standard layers across all tasks tested, though after accounting for parameter count they are generally slightly less efficient than dense linear layers (Experiments 2, 4). The flattened CIFAR-10 result (Experiment 3) is the one case where geometric layers clearly outperform dense baselines on absolute accuracy, but we did not control tightly enough for parameter count to know whether that advantage is structural or just capacity.
+
+Experiment 6 sharpened the negative result from Experiment 5: the failure to self-organize is not because the loss landscape repels quadrature structure. Imposed layer-0 quadrature largely survives unconstrained training, and a soft regularizer maintains it perfectly at no accuracy cost. The structure is a neutral plateau — gradient descent has no pressure toward it, only (at the input layer) no pressure against it. The geometry is permitted but not preferred, and it never pays for itself in accuracy.
 
 The one experiment that directly tested whether the geometric features are used geometrically (Experiment 5) found that they are not. When given independent filter banks and the mathematical machinery to compute phase and radius, gradient descent on a rotation-augmented classification task does not learn to pair the filters as rotated copies. The phase variable does not track input orientation. The geometric features are treated as a generic nonlinear expansion of the convolutional outputs.
 
@@ -96,7 +109,7 @@ For Experiments 2-4, we did not inspect whether the learned representations use 
 
 When geometry is imposed rather than learned (Experiment 1), it works cleanly — rotating phase by a known amount shifts the output predictably. This confirms the mathematical pipeline is sound. The gap is between "the structure works when you build it in" and "the structure emerges when you let gradient descent find it."
 
-The project's original motivation was that helix-shaped representations emerge in LLMs trained on general text (Nanda et al.), and that providing the geometric primitives explicitly might encourage the same structure to emerge in smaller models trained on specific tasks. The evidence does not support this. The conditions under which helices emerge in LLMs — massive scale, diverse training data, incidental arithmetic in a language modeling objective — may be essential, not incidental. Providing the geometric vocabulary is not enough; gradient descent on a classification loss finds other solutions that work equally well without organizing the representation geometrically.
+The project's original motivation was that helix-shaped representations emerge in LLMs trained on general text (Kantamneni & Tegmark), and that providing the geometric primitives explicitly might encourage the same structure to emerge in smaller models trained on specific tasks. The evidence does not support this. The conditions under which helices emerge in LLMs — massive scale, diverse training data, incidental arithmetic in a language modeling objective — may be essential, not incidental. Providing the geometric vocabulary is not enough; gradient descent on a classification loss finds other solutions that work equally well without organizing the representation geometrically.
 
 These layers are a viable but unremarkable architectural choice for the tasks tested here.
 

@@ -30,8 +30,14 @@ from utils import set_seed
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Rotated MNIST HelixConv Experiment")
     parser.add_argument("--model-type", type=str, default=None,
-                        choices=["standard_cnn", "standard_cnn_matched", "circle_conv", "helix_conv"])
+                        choices=["standard_cnn", "standard_cnn_matched", "circle_conv", "helix_conv",
+                                 "helix_conv_quadinit", "helix_conv_quadreg"])
     parser.add_argument("--all-models", action="store_true", help="Train all 4 model variants")
+    parser.add_argument("--quad-models", action="store_true",
+                        help="Train the quadrature experiment variants "
+                             "(helix_conv, helix_conv_quadinit, helix_conv_quadreg)")
+    parser.add_argument("--quad-reg-lambda", type=float, default=None,
+                        help="Quadrature regularization strength for helix_conv_quadreg")
     parser.add_argument("--scale", type=str, default=None, choices=["small", "medium", "large"])
     parser.add_argument("--sweep-scales", action="store_true", help="Run all scales")
     parser.add_argument("--quick", action="store_true", help="Fast sanity check (1 epoch, limited batches)")
@@ -101,14 +107,18 @@ def run_single(config: RotMNISTConfig, cli_data_dir: str | None, args: argparse.
     # Optional analyses for geometric models
     run_dir = Path(result["results_dir"])
 
-    if args.run_filter_analysis and config.model_type in ("circle_conv", "helix_conv"):
+    if args.run_filter_analysis and config.model_type in (
+        "circle_conv", "helix_conv", "helix_conv_quadinit", "helix_conv_quadreg"
+    ):
         print(f"\nRunning filter analysis...")
         from rot_mnist_analyze_filters import run_filter_analysis
         filter_summary = run_filter_analysis(model, run_dir, config.model_type)
         print(f"  Mean corr_star: {filter_summary['mean_corr_star']:.4f}")
         print(f"  Fraction near 90°: {filter_summary['fraction_near_90']:.4f}")
 
-    if args.run_trajectory_analysis and config.model_type in ("circle_conv", "helix_conv"):
+    if args.run_trajectory_analysis and config.model_type in (
+        "circle_conv", "helix_conv", "helix_conv_quadinit", "helix_conv_quadreg"
+    ):
         print(f"\nRunning trajectory analysis...")
         from rot_mnist_analyze_trajectory import run_trajectory_analysis
         from torchvision import datasets, transforms
@@ -131,7 +141,7 @@ def run_single(config: RotMNISTConfig, cli_data_dir: str | None, args: argparse.
                 device=device,
             )
 
-    if args.run_intervention_analysis and config.model_type == "helix_conv":
+    if args.run_intervention_analysis and config.model_type.startswith("helix_conv"):
         print(f"\nRunning intervention analysis...")
         from rot_mnist_analyze_intervention import sweep_intervention_angles
         from torchvision import datasets, transforms
@@ -198,6 +208,7 @@ def main() -> None:
         "device": args.device,
         "limit_train_batches": args.limit_train_batches,
         "limit_eval_batches": args.limit_eval_batches,
+        "quad_reg_lambda": args.quad_reg_lambda,
     }
     for key, value in overrides.items():
         if value is not None:
@@ -218,6 +229,8 @@ def main() -> None:
     # Determine models to run
     if args.all_models:
         model_types = ["standard_cnn", "standard_cnn_matched", "circle_conv", "helix_conv"]
+    elif args.quad_models:
+        model_types = ["helix_conv", "helix_conv_quadinit", "helix_conv_quadreg"]
     elif args.model_type:
         model_types = [args.model_type]
     else:
