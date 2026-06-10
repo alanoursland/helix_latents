@@ -1,0 +1,44 @@
+{
+  "dataset": "Rotated MNIST",
+  "input": "1x28x28_rotated",
+  "seed": 0,
+  "epochs": 30,
+  "results": [
+    {
+      "model_type": "helix_conv",
+      "scale": "small",
+      "param_count": 63642,
+      "best_epoch": 29,
+      "best_val_accuracy": 0.9654,
+      "test_rotated_accuracy": 0.9639,
+      "test_rotated_loss": 0.11257183473706245,
+      "test_unrotated_accuracy": 0.9695,
+      "test_unrotated_loss": 0.0942481370948255,
+      "mean_epoch_seconds": 66.81771862506866
+    },
+    {
+      "model_type": "helix_conv_quadinit",
+      "scale": "small",
+      "param_count": 63642,
+      "best_epoch": 29,
+      "best_val_accuracy": 0.9662,
+      "test_rotated_accuracy": 0.9615,
+      "test_rotated_loss": 0.11964053829088807,
+      "test_unrotated_accuracy": 0.966,
+      "test_unrotated_loss": 0.10698421259298921,
+      "mean_epoch_seconds": 67.06911002794901
+    },
+    {
+      "model_type": "helix_conv_quadreg",
+      "scale": "small",
+      "param_count": 63642,
+      "best_epoch": 26,
+      "best_val_accuracy": 0.9648,
+      "test_rotated_accuracy": 0.9612,
+      "test_rotated_loss": 0.12508547908961773,
+      "test_unrotated_accuracy": 0.9617,
+      "test_unrotated_loss": 0.12178299284279347,
+      "mean_epoch_seconds": 66.49337355295818
+    }
+  ]
+}
