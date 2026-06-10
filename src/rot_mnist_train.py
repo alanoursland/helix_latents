@@ -33,6 +33,7 @@ def train_one_epoch(
     optimizer: torch.optim.Optimizer,
     device: torch.device,
     limit_batches: int | None = None,
+    quad_reg_lambda: float = 0.0,
 ) -> dict[str, float]:
     model.train()
     total_loss = 0.0
@@ -47,6 +48,8 @@ def train_one_epoch(
 
         logits = model(images)
         loss = F.cross_entropy(logits, targets)
+        if quad_reg_lambda > 0:
+            loss = loss + quad_reg_lambda * model.quadrature_penalty()
 
         optimizer.zero_grad()
         loss.backward()
@@ -167,6 +170,11 @@ def fit_rot_mnist(
     ckpt_dir = Path(config.checkpoint_dir)
     ckpt_dir.mkdir(parents=True, exist_ok=True)
 
+    quad_reg_lambda = (
+        config.quad_reg_lambda if config.model_type == "helix_conv_quadreg" else 0.0
+    )
+    track_alignment = hasattr(model, "quadrature_alignment")
+
     history: dict[str, list] = {
         "train_loss": [],
         "train_accuracy": [],
@@ -175,6 +183,11 @@ def fit_rot_mnist(
         "val_loss": [],
         "val_accuracy": [],
     }
+    if track_alignment:
+        # Mean per-unit correlation between W_v and rotate(W_u, 90°), per
+        # conv block, recorded at init and after each epoch. This is the
+        # preserve-or-destroy trace for the quadrature experiment.
+        history["quad_alignment"] = [model.quadrature_alignment()]
 
     best_val_acc = -1.0
     best_val_loss = float("inf")
@@ -185,6 +198,7 @@ def fit_rot_mnist(
         train_metrics = train_one_epoch(
             model, dataloaders["train"], optimizer, device,
             limit_batches=config.limit_train_batches,
+            quad_reg_lambda=quad_reg_lambda,
         )
         val_metrics = evaluate(
             model, dataloaders["val"], device,
@@ -200,6 +214,8 @@ def fit_rot_mnist(
         history["train_examples_per_second"].append(train_metrics["examples_per_second"])
         history["val_loss"].append(val_metrics["loss"])
         history["val_accuracy"].append(val_metrics["accuracy"])
+        if track_alignment:
+            history["quad_alignment"].append(model.quadrature_alignment())
 
         # Best checkpoint by val accuracy (tiebreak: val loss)
         is_best = False
@@ -220,7 +236,11 @@ def fit_rot_mnist(
             f"train_acc={train_metrics['accuracy']:.4f}  "
             f"val_loss={val_metrics['loss']:.4f}  "
             f"val_acc={val_metrics['accuracy']:.4f}  "
-            f"{'*' if is_best else ''}"
+            + (
+                f"quad_align={history['quad_alignment'][-1][0]:.3f}  "
+                if track_alignment else ""
+            )
+            + f"{'*' if is_best else ''}"
         )
 
     # Restore best checkpoint
@@ -272,8 +292,33 @@ def fit_rot_mnist(
         "test_unrotated_loss": test_unrotated["loss"],
         "mean_epoch_seconds": mean_epoch_seconds,
     }
+    if track_alignment:
+        metrics["quad_alignment_init"] = history["quad_alignment"][0]
+        metrics["quad_alignment_final"] = model.quadrature_alignment()
+        metrics["quad_reg_lambda"] = quad_reg_lambda
     save_json(metrics, results_dir / "metrics.json")
     save_json(history, results_dir / "history.json")
+
+    # Quadrature alignment plot (preserve-or-destroy trace)
+    if track_alignment:
+        align = np.array(history["quad_alignment"])  # [epochs+1, num_blocks]
+        fig, ax = plt.subplots(figsize=(8, 5))
+        for block in range(align.shape[1]):
+            ax.plot(range(align.shape[0]), align[:, block], marker="o",
+                    markersize=3, label=f"Layer {block}")
+        ax.axhline(y=1.0, color="green", linestyle="--", alpha=0.5,
+                   label="Perfect quadrature")
+        ax.axhline(y=0.0, color="gray", linestyle="--", alpha=0.5,
+                   label="Independent filters")
+        ax.set_xlabel("Epoch (0 = init)")
+        ax.set_ylabel("Mean corr(W_v, rotate(W_u, 90°))")
+        ax.set_title(f"Quadrature Alignment During Training\n{run_name}")
+        ax.set_ylim(-0.3, 1.05)
+        ax.legend()
+        ax.grid(True, alpha=0.3)
+        fig.tight_layout()
+        fig.savefig(results_dir / "quad_alignment.png", dpi=150)
+        plt.close(fig)
 
     # Training history plot
     plot_training_history(
